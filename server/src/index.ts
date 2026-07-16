@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import authRoutes from './routes/auth'
 
 dotenv.config();
 
@@ -14,7 +15,10 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Health check route — confirms server is running
+// Routes
+app.use('/auth', authRoutes)
+
+// Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'OpsFlow server is running' });
 });
