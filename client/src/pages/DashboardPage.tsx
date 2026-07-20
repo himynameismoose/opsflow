@@ -75,6 +75,19 @@ const DashboardPage = () => {
         navigate('/login')
     }
 
+    const handleStatusUpdate = async (id: string, status: string) => {
+        try {
+            await axios.patch(
+                `http://localhost:8080/workflows/${id}/status`,
+                { status },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            fetchRequests()
+        } catch {
+            setError('Failed to update status')
+        }
+    }
+
     const statusColors: Record<string, string> = {
         PENDING: 'bg-yellow-100 text-yellow-800',
         APPROVED: 'bg-green-100 text-green-800',
@@ -214,9 +227,24 @@ const DashboardPage = () => {
                                                 {new Date(request.createdAt).toLocaleDateString()}
                                             </p>
                                         </div>
-                                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[request.status]}`}>
-                                            {request.status.replace('_', ' ')}
-                                        </span>
+                                        {user?.role === 'REQUESTER' ? (
+                                            <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[request.status]}`}>
+                                                {request.status.replace('_', ' ')}
+                                            </span>
+                                        ) : (
+                                            <select
+                                                value={request.status}
+                                                onChange={(e) => handleStatusUpdate(request.id, e.target.value)}
+                                                className={`text-sm font-medium px-2.5 py-1 rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 ${statusColors[request.status]}`}
+                                            >
+                                                <option value="PENDING">PENDING</option>
+                                                <option value="APPROVED">APPROVED</option>
+                                                <option value="REJECTED">REJECTED</option>
+                                                <option value="IN_PROGRESS">IN PROGRESS</option>
+                                                <option value="COMPLETED">COMPLETED</option>
+                                            </select>
+                                        )}
+                                        
                                     </div>
                                 </div>
                             ))}
