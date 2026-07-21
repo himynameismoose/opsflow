@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext'
-import axios from 'axios'
+import api from "../lib/api"
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 
@@ -31,7 +31,7 @@ const DashboardPage = () => {
 
     const fetchRequests = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/workflows', {
+            const response = await api.get('/workflows', {
                 headers: { Authorization: `Bearer ${token}`}
             })
 
@@ -52,8 +52,8 @@ const DashboardPage = () => {
         setSubmitting(true)
 
         try {
-            await axios.post(
-                'http://localhost:8080/workflows',
+            await api.post(
+                '/workflows',
                 { title, description },
                 { headers: { Authorization: `Bearer ${token}` } }
             )
@@ -77,8 +77,8 @@ const DashboardPage = () => {
 
     const handleStatusUpdate = async (id: string, status: string) => {
         try {
-            await axios.patch(
-                `http://localhost:8080/workflows/${id}/status`,
+            await api.patch(
+                `/workflows/${id}/status`,
                 { status },
                 { headers: { Authorization: `Bearer ${token}` } }
             )
