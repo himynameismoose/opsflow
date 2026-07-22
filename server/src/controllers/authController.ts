@@ -46,6 +46,7 @@ export const register = async (req: Request, res: Response) => {
             }
         })
     } catch (error) {
+        console.error('Register error:', error)
         res.status(500).json({ message: 'Server error during registration' })
     }
 }
@@ -88,6 +89,7 @@ export const login = async (req: Request, res: Response) => {
             }
         })
     } catch (error) {
+        console.error('Login error:', error);
         res.status(500).json({ message: 'Server error during login' })
     }
 }
