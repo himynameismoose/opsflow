@@ -18,6 +18,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   requests  WorkflowRequest[]
+  auditLogs AuditLog[]
 }
 
 model WorkflowRequest {
@@ -44,4 +45,17 @@ enum Status {
   REJECTED
   IN_PROGRESS
   COMPLETED
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String
+  entityType String
+  entityId   String
+  oldValue   String?
+  newValue   String?
+  createdAt  DateTime @default(now())
+
+  performedById String
+  performedBy   User   @relation(fields: [performedById], references: [id])
 }

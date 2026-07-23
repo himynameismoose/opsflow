@@ -2,7 +2,8 @@ import { Router } from 'express'
 import {
     createRequest,
     getRequests,
-    updateRequestStatus
+    updateRequestStatus,
+    getAuditLogs
 } from '../controllers/workflowController'
 import { authenticate } from '../middleware/authMiddleware'
 
@@ -12,5 +13,6 @@ const router = Router()
 router.post('/', authenticate, createRequest)
 router.get('/', authenticate, getRequests)
 router.patch('/:id/status', authenticate, updateRequestStatus)
+router.get('/:id/audit-logs', authenticate, getAuditLogs)
 
 export default router
