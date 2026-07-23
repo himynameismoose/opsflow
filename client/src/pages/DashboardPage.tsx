@@ -3,6 +3,18 @@ import api from "../lib/api"
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 
+interface AuditLog {
+    id: string
+    action: string
+    oldValue: string | null
+    newValue: string | null
+    createdAt: string
+    performedBy: {
+        name: string
+        role: string
+    }
+}
+
 interface WorkflowRequest {
     id: string
     title: string
@@ -29,6 +41,9 @@ const DashboardPage = () => {
     const [submitting, setSubmitting] = useState(false)
     const [showForm, setShowForm] = useState(false)
 
+    const [expandedId, setExpandedId] = useState<string | null>(null)
+    const [auditLogs, setAuditLogs] = useState<Record<string, AuditLog[]>>({})
+
     const fetchRequests = async () => {
         try {
             const response = await api.get('/workflows', {
@@ -40,6 +55,26 @@ const DashboardPage = () => {
             setError('Failed to load requests')
         } finally {
             setLoading(false)
+        }
+    }
+
+    const fetchAuditLogs = async (requestId: string) => {
+        if (auditLogs[requestId]) {
+            setExpandedId(expandedId === requestId ? null : requestId)
+
+            return
+        }
+
+        try {
+            const response = await api.get(`/workflows/${requestId}/audit-logs`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+
+            setAuditLogs(prev => ({ ...prev, [requestId]: response.data.logs }))
+            setExpandedId(requestId)
+
+        } catch {
+            setError('Failed to load history')
         }
     }
 
@@ -226,6 +261,30 @@ const DashboardPage = () => {
                                                 Submitted by {request.requester.name} •{' '}
                                                 {new Date(request.createdAt).toLocaleDateString()}
                                             </p>
+                                            <button
+                                                onClick={() => fetchAuditLogs(request.id)}
+                                                className="text-xs text-blue-500 hover:text-blue-700 mt-2 transition-colors"
+                                            >
+                                                {expandedId === request.id ? 'Hide history' : 'View history'}
+                                            </button>
+
+                                            {expandedId === request.id && auditLogs[request.id] && (
+                                                <div className="mt-3 border-t border-gray-100 pt-3 space-y-2">
+                                                    {auditLogs[request.id].map((log) => (
+                                                        <div key={log.id} className="flex items-start gap-2">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" />
+                                                            <div>
+                                                                <p className="text-xs text-gray-600">
+                                                                    {log.action === 'REQUEST_CREATED' ? `Created by ${log.performedBy.name}` : `Status changed to ${log.newValue?.replace('_', ' ')} by ${log.performedBy.name}`}
+                                                                </p>
+                                                                <p className="text-xs text-gray-400">
+                                                                    {new Date(log.createdAt).toLocaleString()}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                         {user?.role === 'REQUESTER' ? (
                                             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[request.status]}`}>
