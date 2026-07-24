@@ -58,7 +58,7 @@ A full-stack internal tooling application for managing operational workflow requ
 3. Create `server/.env`:
 ```
 DATABASE_URL=your_supabase_pooler_url
-DIRECT_URL=your_supabase_direct_url
+DIRECT_URL=your_supabase_direct_url?pgbouncer=true
 JWT_SECRET=your_jwt_secret
 PORT=8080
 CLIENT_URL=http://localhost:5173
