@@ -2,6 +2,7 @@ import { Response } from 'express'
 import prisma from '../lib/prisma'
 import { AuthRequest } from '../middleware/authMiddleware'
 import { createAuditLog } from '../lib/auditLog'
+import { assignApprover } from '../lib/approvalRouter'
 
 // Create a new workflow request
 export const createRequest = async (req: AuthRequest, res: Response) => {
@@ -9,11 +10,24 @@ export const createRequest = async (req: AuthRequest, res: Response) => {
         const { title, description } = req.body
         const requesterId = req.user!.userId
 
+        // Auto-assign to approver with lowest workload
+        const assignedToId = await assignApprover()
+
         const workflowRequest = await prisma.workflowRequest.create({
             data: {
                 title,
                 description,
                 requesterId,
+                assignedToId,
+            },
+            include: {
+                assignedTo: {
+                    select: {
+                        id: true,
+                        name: true,
+                        role: true,
+                    }
+                }
             }
         })
 
@@ -25,6 +39,16 @@ export const createRequest = async (req: AuthRequest, res: Response) => {
             performedById: requesterId,
             newValue: 'PENDING',
         })
+
+        if (assignedToId) {
+            await createAuditLog({
+                action: 'REQUEST_ASSIGNED',
+                entityType: 'WorkflowRequest',
+                entityId: workflowRequest.id,
+                performedById: requesterId,
+                newValue: assignedToId,
+            })
+        }
 
         res.status(201).json({
             message: 'Workflow request created successfully',
@@ -48,6 +72,13 @@ export const getRequests = async (req: AuthRequest, res: Response) => {
                         id: true,
                         name: true,
                         email: true,
+                        role: true,
+                    }
+                },
+                assignedTo: {
+                    select: {
+                        id: true,
+                        name: true,
                         role: true,
                     }
                 }

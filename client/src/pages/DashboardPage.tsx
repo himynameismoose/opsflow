@@ -26,6 +26,11 @@ interface WorkflowRequest {
         email: string
         role: string
     }
+    assignedTo: {
+        id: string
+        name: string
+        role: string
+    } | null
 }
 
 const DashboardPage = () => {
@@ -261,6 +266,14 @@ const DashboardPage = () => {
                                                 Submitted by {request.requester.name} •{' '}
                                                 {new Date(request.createdAt).toLocaleDateString()}
                                             </p>
+                                            {request.assignedTo && (
+                                                <p className="text-xs text-gray-400">
+                                                    Assigned to{' '}
+                                                    <span className="font-medium text-gray-500">
+                                                        {request.assignedTo.name}
+                                                    </span>
+                                                </p>
+                                            )}
                                             <button
                                                 onClick={() => fetchAuditLogs(request.id)}
                                                 className="text-xs text-blue-500 hover:text-blue-700 mt-2 transition-colors"
@@ -275,7 +288,11 @@ const DashboardPage = () => {
                                                             <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" />
                                                             <div>
                                                                 <p className="text-xs text-gray-600">
-                                                                    {log.action === 'REQUEST_CREATED' ? `Created by ${log.performedBy.name}` : `Status changed to ${log.newValue?.replace('_', ' ')} by ${log.performedBy.name}`}
+                                                                    {log.action === 'REQUEST_CREATED'
+                                                                        ? `Created by ${log.performedBy.name}` 
+                                                                        : log.action === 'REQUEST_ASSIGNED'
+                                                                        ? `Assigned to an approver by ${log.performedBy.name}`
+                                                                        : `Status changed to ${log.newValue?.replace('_', ' ')} by ${log.performedBy.name}`}
                                                                 </p>
                                                                 <p className="text-xs text-gray-400">
                                                                     {new Date(log.createdAt).toLocaleString()}
