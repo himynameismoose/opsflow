@@ -152,6 +152,14 @@ const DashboardPage = () => {
                             {user?.role}
                         </span>
                     </span>
+                    {(user?.role === 'ADMIN' || user?.role === 'MANAGER') && (
+                        <button
+                            onClick={() => navigate('/analytics')}
+                            className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
+                        >
+                            Analytics
+                        </button>
+                    )}
                     <button
                         onClick={handleLogout}
                         className="text-sm text-gray-500 hover-text-gray-800 transition-colors"
