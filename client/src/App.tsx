@@ -4,6 +4,7 @@ import { useAuth } from './context/AuthContext'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
+import AnalyticsPage from './pages/AnalyticsPage'
 
 // Protects routes that require authentication
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -23,6 +24,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute>
+                <AnalyticsPage />
               </ProtectedRoute>
             }
           />
