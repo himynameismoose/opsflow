@@ -6,6 +6,7 @@ import {
 } from 'recharts'
 import api from '../lib/api'
 import { useAuth } from '../context/AuthContext'
+import { exportToCSV } from '../lib/exportCsv'
 
 interface AnalyticsData {
     totalRequests: number
@@ -29,6 +30,7 @@ const AnalyticsPage = () => {
     const [data, setData] = useState<AnalyticsData | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
+    const [requests, setRequests] = useState<any[]>([])
 
     useEffect(() => {
         const fetchAnalytics = async () => {
@@ -38,6 +40,12 @@ const AnalyticsPage = () => {
                 })
 
                 setData(response.data)
+
+                const requestsResponse = await api.get('workflows', {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+
+                setRequests(requestsResponse.data.requests)
             } catch {
                 setError('Failed to load analytics')
             } finally {
@@ -96,11 +104,21 @@ const AnalyticsPage = () => {
 
             {/* Content */}
             <div className="max-w-6xl mx-auto px-6 py-8">
-                <div className="mb-8">
-                    <h2 className="text-xl font-semibold text-gray-800">Analytics</h2>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                        Workflow request trends and performance
-                    </p>
+                <div className="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 className="text-xl font-semibold text-gray-800">Analytics</h2>
+                        <p className="text-sm text-gray-500 mt-0.5">
+                            Workflow request trends and performance
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => exportToCSV(requests)}
+                        disabled={requests.length === 0}
+                        className="bg-white border border-gray-200 hover:border-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                    >
+                        <span>↓</span>
+                        Export CSV
+                    </button>
                 </div>
 
                 {/* Stat cards */}
@@ -153,7 +171,7 @@ const AnalyticsPage = () => {
                         <h3 className="text-sm font-semibold text-gray-700 mb-4">
                             Requests by status
                         </h3>
-                        <ResponsiveContainer width="100%" height={220}>
+                        <ResponsiveContainer width="100%" height={260}>
                             <PieChart>
                                 <Pie
                                     data={data?.byStatus}
@@ -162,9 +180,6 @@ const AnalyticsPage = () => {
                                     cx="50%"
                                     cy="50%"
                                     outerRadius={80}
-                                    label={({ name, percent }) =>
-                                        `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
-                                    }
                                 >
                                     {data?.byStatus.map((entry) => (
                                         <Cell 
