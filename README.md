@@ -11,7 +11,12 @@ A full-stack internal tooling application for managing operational workflow requ
 - User authentication with JWT and bcrypt password hashing
 - Role-based access control (Admin, Manager, Requester)
 - Create and track workflow requests
-- Admins and managers can approve, reject, or update request status
+- Automated approval routing — requests auto-assigned based on approver workload
+- Status updates with role-based permissions (Admin/Manager only)
+- Audit log with full history tracking on every request
+- In-app notification system with bell icon, unread badge, and dropdown panel
+- Analytics dashboard with KPI cards, charts, and request trends (Admin/Manager only)
+- CSV export of all workflow requests
 - Requesters only see their own submissions
 - Persistent data with PostgreSQL via Supabase
 
