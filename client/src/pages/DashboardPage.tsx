@@ -2,6 +2,7 @@ import { useAuth } from '../context/AuthContext'
 import api from "../lib/api"
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import NotificationBell from '../components/NotificationBell'
 
 interface AuditLog {
     id: string
@@ -160,9 +161,10 @@ const DashboardPage = () => {
                             Analytics
                         </button>
                     )}
+                    <NotificationBell />
                     <button
                         onClick={handleLogout}
-                        className="text-sm text-gray-500 hover-text-gray-800 transition-colors"
+                        className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
                     >
                         Sign Out
                     </button>

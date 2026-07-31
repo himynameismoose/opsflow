@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth'
 import workflowRoutes from './routes/workflow'
 import analyticsRoutes from './routes/analytics'
+import notificationRoutes from './routes/notifications'
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use('/auth', authRoutes)
 app.use('/workflows', workflowRoutes)
 app.use('/analytics', analyticsRoutes)
+app.use('/notifications', notificationRoutes)
 
 // Health check
 app.get('/health', (req, res) => {
