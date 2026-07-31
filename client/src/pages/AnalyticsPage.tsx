@@ -7,6 +7,7 @@ import {
 import api from '../lib/api'
 import { useAuth } from '../context/AuthContext'
 import { exportToCSV } from '../lib/exportCsv'
+import NotificationBell from '../components/NotificationBell'
 
 interface AnalyticsData {
     totalRequests: number
@@ -93,6 +94,7 @@ const AnalyticsPage = () => {
                             {user?.role}
                         </span>
                     </span>
+                    <NotificationBell />
                     <button
                         onClick={handleLogout}
                         className="text-sm text-gray-500 hover:text-gray-800 transition-colors"

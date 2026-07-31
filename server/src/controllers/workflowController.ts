@@ -3,6 +3,7 @@ import prisma from '../lib/prisma'
 import { AuthRequest } from '../middleware/authMiddleware'
 import { createAuditLog } from '../lib/auditLog'
 import { assignApprover } from '../lib/approvalRouter'
+import { createNotification } from '../lib/notifications'
 
 // Create a new workflow request
 export const createRequest = async (req: AuthRequest, res: Response) => {
@@ -48,6 +49,12 @@ export const createRequest = async (req: AuthRequest, res: Response) => {
                 performedById: requesterId,
                 newValue: assignedToId,
             })
+
+            // Notify the assigned approver
+            await createNotification(
+                assignedToId,
+                `New workflow request assigned to you: "${title}"`
+            )
         }
 
         res.status(201).json({
@@ -122,6 +129,12 @@ export const updateRequestStatus = async (req: AuthRequest, res: Response) => {
             oldValue: existing?.status,
             newValue: status,
         })
+
+        // Notify the requester of the status change
+        await createNotification(
+            existing!.requesterId,
+            `Your request "${existing!.title}" has been updated to ${status.replace('_', ' ')}`
+        )
 
         res.status(200).json({
             message: 'Status updated successfully',
