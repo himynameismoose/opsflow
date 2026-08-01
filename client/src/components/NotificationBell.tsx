@@ -111,53 +111,60 @@ const NotificationBell = () => {
 
             {/* Dropdown panel */}
             {open && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl border border-gray-200 shadow-lg z-50">
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                        <h3 className="text-sm font-semibold text-gray-800">
-                            Notifications
-                        </h3>
-                        {unreadCount > 0 && (
-                            <button
-                                onClick={markAllAsRead}
-                                className="text-xs text-blue-500 hover:text-blue-700 transition-colors"
-                            >
-                                Mark all as read
-                            </button>
-                        )}
-                    </div>
-
-                    <div className="max-h-80 overflow-y-auto">
-                        {notifications.length === 0 ? (
-                            <div className="px-4 py-8 text-center text-sm text-gray-400">
-                                No notifications yet
-                            </div>
-                        ) : (
-                            notifications.map(notification => (
-                                <div
-                                    key={notification.id}
-                                    onClick={() => !notification.read && markAsRead(notification.id)}
-                                    className={`px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors ${
-                                        !notification.read ? 'bg-blue-50' : ''
-                                    }`}
+                <>
+                    {/* Invisible overlay */}
+                    <div 
+                        className="fixed inset-0 z-40"
+                        onClick={() => setOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl border border-gray-200 shadow-lg z-50">
+                        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                            <h3 className="text-sm font-semibold text-gray-800">
+                                Notifications
+                            </h3>
+                            {unreadCount > 0 && (
+                                <button
+                                    onClick={markAllAsRead}
+                                    className="text-xs text-blue-500 hover:text-blue-700 transition-colors"
                                 >
-                                    <div className="flex items-start gap-2">
-                                        {!notification.read && (
-                                            <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0"/>
-                                        )}
-                                        <div>
-                                            <p className="text-sm text-gray-700">
-                                                {notification.message}
-                                            </p>
-                                            <p className="text-xs text-gray-400 mt-0.5">
-                                                {new Date(notification.createdAt).toLocaleString()}
-                                            </p>
+                                    Mark all as read
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="max-h-80 overflow-y-auto">
+                            {notifications.length === 0 ? (
+                                <div className="px-4 py-8 text-center text-sm text-gray-400">
+                                    No notifications yet
+                                </div>
+                            ) : (
+                                notifications.map(notification => (
+                                    <div
+                                        key={notification.id}
+                                        onClick={() => !notification.read && markAsRead(notification.id)}
+                                        className={`px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors ${
+                                            !notification.read ? 'bg-blue-50' : ''
+                                        }`}
+                                    >
+                                        <div className="flex items-start gap-2">
+                                            {!notification.read && (
+                                                <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0"/>
+                                            )}
+                                            <div>
+                                                <p className="text-sm text-gray-700">
+                                                    {notification.message}
+                                                </p>
+                                                <p className="text-xs text-gray-400 mt-0.5">
+                                                    {new Date(notification.createdAt).toLocaleString()}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
-                        )}
+                                ))
+                            )}
+                        </div>
                     </div>
-                </div>
+                </>
             )}
         </div>
     )
