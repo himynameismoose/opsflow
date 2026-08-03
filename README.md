@@ -62,8 +62,8 @@ A full-stack internal tooling application for managing operational workflow requ
 
 3. Create `server/.env`:
 ```
-DATABASE_URL=your_supabase_pooler_url
-DIRECT_URL=your_supabase_direct_url?pgbouncer=true
+DATABASE_URL=your_supabase_pooler_url?pgbouncer=true
+DIRECT_URL=your_supabase_direct_url
 JWT_SECRET=your_jwt_secret
 PORT=8080
 CLIENT_URL=http://localhost:5173
@@ -97,6 +97,34 @@ VITE_API_URL=http://localhost:8080
 
 9. Open `http://localhost:5173`
 
+## Running with Docker
+
+To run the entire stack locally with Docker:
+
+```bash
+docker-compose up --build
+```
+
+This starts three containers:
+- **db** — PostgreSQL on port 5433
+- **server** — Express API on port 8080  
+- **client** — React app served by nginx on port 80
+
+Then run migrations against the Docker database:
+
+```bash
+cd server
+DATABASE_URL=postgresql://postgres:postgres@localhost:5433/opsflow npx prisma migrate dev
+```
+
+Open `http://localhost` in your browser.
+
+To stop all containers:
+
+```bash
+docker-compose down
+```
+
 ## Demo Accounts
 
 | Role | Email | Password |
@@ -110,12 +138,13 @@ VITE_API_URL=http://localhost:8080
 opsflow/
 ├── client/                  # React + TypeScript frontend
 │   └── src/
+│       ├── components/      # NotificationBell and shared components
 │       ├── context/         # Auth context
-│       ├── lib/             # Axios instance
-│       └── pages/           # Login, Register, Dashboard
+│       ├── lib/             # Axios instance, CSV export utility
+│       └── pages/           # Login, Register, Dashboard, Analytics
 └── server/                  # Node.js + Express backend
     └── src/
-        ├── controllers/
-        ├── middleware/
-        ├── routes/
-        └── lib/
+        ├── controllers/     # Auth, workflow, analytics, notifications
+        ├── middleware/      # JWT auth middleware
+        ├── routes/          # Route definitions
+        └── lib/             # Prisma client, audit log, notifications, approval router
