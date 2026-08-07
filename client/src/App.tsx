@@ -13,6 +13,14 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />
 }
 
+// Protects routes that require Admin or Manager role
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, user } = useAuth()
+  if (!isAuthenticated) return <Navigate to="/login" />
+  if (user?.role === 'REQUESTER') return <Navigate to="/dashboard" />
+  return <>{children}</>
+}
+
 function App() {
   return (
     <ThemeProvider>
@@ -32,9 +40,9 @@ function App() {
             <Route
               path="/analytics"
               element={
-                <ProtectedRoute>
+                <AdminRoute>
                   <AnalyticsPage />
-                </ProtectedRoute>
+                </AdminRoute>
               }
             />
             <Route path="*" element={<Navigate to="/login" />} />
